@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<meta name="description" content="MediPulse: low-cost heart rate and SpO2 monitoring with a web app to save checkup records, link with your doctor, and get critical-reading alerts. ميدبلس: متابعة نبض القلب ونسبة الأكسجين وربط المريض بطبيبه.">
+<meta name="robots" content="index,follow">
+<!-- GOOGLE-VERIFY-HERE -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>MediPulse — Heart Rate &amp; SpO₂ Monitoring | ميدبلس</title>
+<style>
+:root{--navy:#102a43;--navy2:#243b53;--teal:#1BB7B0;--teal-d:#12908a;--blue:#3478ae;--bg:#f4f8fa;--card:#fff;--line:#e3ebf0;--mut:#627d98;--red:#c0392b;--amber:#b7791f;--green:#1f8a5b;--r:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic","Noto Sans",Arial,sans-serif;line-height:1.5;padding-bottom:84px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.hdr{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{width:38px;height:38px;flex:none}
+.brand b{display:block;font-size:17px;line-height:1.1}
+.brand span{display:block;font-size:11px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acts{display:flex;gap:6px;align-items:center}
+.ib{background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:12px;min-width:40px;height:40px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;position:relative;text-decoration:none}
+.ib:hover{background:rgba(255,255,255,.22)}
+.ib.sos{background:var(--red)}
+.dot{position:absolute;top:7px;inset-inline-end:8px;width:9px;height:9px;border-radius:50%;background:#ff6b5e;border:2px solid var(--navy)}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:24px;margin:6px 0 2px}
+h2{font-size:17px;margin:0}
+p{margin:4px 0}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-d);font-weight:700}
+.sub{color:var(--mut);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px}
+.grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:700px){.grid.c2{grid-template-columns:1fr 1fr}.grid.c3{grid-template-columns:repeat(3,1fr)}}
+.metric{border-inline-start:4px solid var(--teal);padding:14px;background:var(--card);border-radius:var(--r);border:1px solid var(--line);border-inline-start:4px solid var(--teal)}
+.metric.b{border-inline-start-color:var(--blue)}
+.metric .l{font-size:13px;color:var(--mut)}
+.metric .v{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums}
+.metric .v small{font-size:14px;font-weight:500;color:var(--mut);margin-inline-start:4px}
+.metric .f{font-size:12px;color:var(--mut)}
+.banner{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-top:14px}
+.pill{font-size:12px;padding:3px 10px;border-radius:99px;background:#e8eef2;color:var(--navy2);font-weight:600;white-space:nowrap}
+.pill.ok{background:#dff5ea;color:var(--green)}.pill.bad{background:#fde8e5;color:var(--red)}.pill.warn{background:#fdf1d9;color:var(--amber)}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:600;background:var(--teal);color:#fff;min-height:44px}
+.btn:hover{background:var(--teal-d)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sec{background:#e8eef2;color:var(--navy)}
+.btn.danger{background:#fde8e5;color:var(--red)}
+.btn.link{background:none;color:var(--teal-d);padding:4px 0;min-height:0}
+.btn.sm{padding:6px 12px;min-height:34px;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.sb{justify-content:space-between}
+label.f{display:block;font-size:13px;color:var(--mut);margin-top:10px}
+label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #cbd6dd;border-radius:10px;background:#fff;color:var(--navy);font-size:15px}
+label.f input:disabled{background:#f0f4f6}
+.two{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+@media(max-width:480px){.two{grid-template-columns:1fr}}
+.rec{display:flex;align-items:center;gap:12px;width:100%;text-align:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-top:8px}
+.rec:hover{border-color:var(--teal)}
+.rec .m{flex:1;min-width:0}.rec .m b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rec .m small{color:var(--mut)}
+.rec .vals{font-variant-numeric:tabular-nums;font-weight:700;text-align:end;font-size:14px}
+.rec .vals small{color:var(--mut);font-weight:500}
+.empty{text-align:center;color:var(--mut);padding:22px 10px}
+.empty b{display:block;color:var(--navy)}
+.note{display:flex;gap:8px;background:#eef6fa;border-radius:12px;padding:10px 12px;font-size:13px;color:var(--navy2);margin-top:10px}
+.note.warn{background:#fdf1d9}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.seg button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;font-size:13px}
+.seg button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chart{width:100%;height:auto;display:block}
+.chart text{font-size:10px;fill:var(--mut)}
+nav.bn{position:fixed;bottom:0;inset-inline:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:20}
+nav.bn button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mut);padding:6px 2px;min-height:48px;border-radius:12px}
+nav.bn button.on{color:var(--teal-d);font-weight:700}
+nav.bn svg{width:22px;height:22px}
+.toast{position:fixed;bottom:92px;inset-inline:16px;margin:auto;max-width:420px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:12px;z-index:60;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.mb{position:fixed;inset:0;background:rgba(16,42,67,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:700px){.mb{align-items:center}}
+.modal{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:18px;max-height:92vh;overflow:auto}
+@media(min-width:700px){.modal{border-radius:20px}}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0;font-size:14px}
+dt{color:var(--mut)}dd{margin:0;font-weight:600;word-break:break-word}
+.tg{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);gap:10px}
+.tg input{width:22px;height:22px;accent-color:var(--teal)}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:14px}
+.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--teal);flex:none}
+.chk small{display:block;color:var(--mut)}
+.nrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.nrow.un b{color:var(--navy)}.nrow.rd{opacity:.65}
+#map{height:260px;border-radius:12px;margin-top:10px}
+.login-ok{font-size:12px;color:var(--mut);text-align:center;margin:18px 0 0}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media print{.hdr,nav.bn,.btn{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" aria-live="polite"></div>
+<div id="modal"></div>
+<noscript>MediPulse needs JavaScript.</noscript>
+<script>
+"use strict";
+/* ================= i18n ================= */
+const T={
+en:{signIn:"Sign in",signUp:"Create account",createAcct:"Create your account",password:"Password",iAm:"I am a",rolePatient:"Patient",roleDoctor:"Doctor",haveAcct:"Already have an account?",noAcct:"New to MediPulse?",forgot:"Forgot password?",resetSent:"Password reset email sent. Check your inbox.",needName:"Please enter your name.",authLoading:"Loading…",logout:"Sign out",docMode:"Doctor account",fbMissing:"The connection to the server could not load. Check your internet and refresh.",needHost:"Sign-in only works from your published website link, not from a file opened on your computer.",syncErr:"Could not save to the server. Check your connection.",loadErr:"Could not load your account. Check your connection and try again.",eInUse:"This email already has an account. Sign in instead.",eBad:"Wrong email or password.",eWeak:"Password must be at least 6 characters.",eEmail:"Enter a valid email address.",eNet:"No internet connection.",eMany:"Too many attempts. Wait a bit and try again.",eGen:"Something went wrong. Try again.",doctors:"Doctors",linkCode:"Your link code",linkCodeD:"Give this code to your doctor. They send you a request, and nothing is shared until you approve it.",copyCode:"Copy code",codeCopied:"Code copied.",requests:"Link requests",noRequests:"No pending requests.",approve:"Approve",decline:"Decline",linkedDocs:"Linked doctors",noLinked:"No doctors linked yet.",unlink:"Unlink",unlinkQ:"Remove this link? The doctor will no longer see your results.",doctorSees:"Linked doctors can see your name and your checkup results only.",nReq:"A doctor sent you a link request.",approved:"Doctor linked.",done:"Done.",patients:"Patients",docSub:"Patients linked with you.",docSub2:"Read-only view of this patient's results.",addPatient:"Add a patient",patCode:"Patient link code",sendReq:"Send request",reqSent:"Request sent. The patient must approve it.",badCode:"Enter the 6-character code.",noCode:"No patient found with that code.",reqFail:"Could not send the request. You may have already requested this patient.",waitingApproval:"Waiting for the patient's approval",noPatients:"No linked patients yet",noPatientsHint:"Ask a patient for their link code and send a request.",backList:"Patients",refresh:"Refresh",unlinkPat:"Unlink this patient",autoCall:"Auto-call emergency on critical reading",autoCallD:"If a saved reading is critical (heart rate under 40 or over 150, SpO₂ under 90%), MediPulse shows an alert and tries to dial after 10 seconds unless you cancel. Browsers may block automatic dialing, so the red Call button is the reliable option.",critTitle:"Critical reading",critBody:"This reading is far outside normal limits. If you feel unwell, call emergency services now. MediPulse cannot diagnose.",callNow:"Call emergency now",imOk:"I'm OK, dismiss",autoIn:"Calling automatically in",tag:"Care, clearly measured.",home:"Home",records:"Records",nearby:"Nearby",profile:"Profile",notifs:"Notifications",
+safety:"Health monitoring, not diagnosis",welcome:"Your health, in focus.",dash:"A clear view of your checkups and device status.",
+recordsT:"Health records",recordsI:"Your checkups, saved privately on this device.",nearbyT:"Nearby care",nearbyI:"Find hospitals and pharmacies near you.",profileT:"Your profile",
+latest:"Latest completed checkup",hr:"Heart rate",spo2:"Blood oxygen",bpm:"bpm",measuredOn:"Measured",noCk:"No completed checkups yet",
+noCkHint:"When you save a checkup or receive one from a MediPulse device, it will appear here. No measurements have been received.",
+noMeas:"No measurement",device:"Device",noDevice:"No device paired",devHint:"",
+connected:"Connected",disconnected:"Disconnected",connecting:"Connecting",error:"Connection error",
+trend:"Vital sign trend",d3:"3 days",d7:"7 days",d30:"1 month",d365:"1 year",all:"All",needMore:"At least two completed checkups in this period are needed to show a trend.",
+manual:"Add a measurement manually",hrIn:"Heart rate (BPM)",spoIn:"SpO₂ (%)",when:"Date & time",qual:"Quality",qNone:"Not assessed",good:"Good",poor:"Poor",inconc:"Inconclusive",
+saveM:"Save measurement",saved:"Saved.",savedM:"Measurement saved to your private history.",badVals:"Enter a heart rate of 20–250 and SpO₂ of 50–100.",
+needConsent:"Please give consent to store health records before saving.",giveConsent:"Give consent",consentGiven:"Consent saved.",
+search:"Search checkup ID",from:"From",to:"To",allSt:"All statuses",completed:"Completed",failed:"Failed",noRes:"No records match these filters.",count:"records",
+status:"Status",source:"Source",srcManual:"Entered manually",srcDevice:"From device",deviceId:"Device ID",sync:"Storage",syncLocal:"Saved on this device only",
+interp:"Interpretation",within:"Within your configured range",outside:"Outside your configured range",inconcl:"Inconclusive / unreliable",noInterp:"No interpretation (no reference ranges configured)",
+ranges:"Reference ranges used",rangesNone:"No reference ranges are configured, so MediPulse does not interpret readings.",rangesSet:"Heart rate {a}–{b} bpm · SpO₂ ≥ {c}%",
+rangesHelp:"Optional. Set these only with your clinician's guidance. Readings are compared to them; this is not a diagnosis.",hrMin:"Heart rate min",hrMax:"Heart rate max",spoMin:"SpO₂ min",
+del:"Delete record",delQ:"Delete this checkup record? This cannot be undone.",confirmDel:"Yes, delete",cancel:"Cancel",close:"Close",deleted:"Record deleted.",
+exportCsv:"Export CSV",exportJson:"Backup (JSON)",exported:"File downloaded.",
+fullName:"Full name",email:"Email",dob:"Date of birth",phone:"Phone number",trusted:"Trusted contact",notShared:"Never shared automatically",cName:"Contact name",rel:"Relationship",cPhone:"Contact phone",callContact:"Call trusted contact",
+consent:"I consent to storing my health checkup records in my private account on this device.",consentD:"You can change this later. Records are never shared automatically with your trusted contact.",
+save:"Save changes",profSaved:"Profile saved.",notifOn:"In-app notifications",secAlerts:"Security alerts",emerg:"Emergency number",emergHelp:"Used by the red call button. Default 123 (Egypt). Change it for your country.",
+privacy:"Privacy & safety",privD:"MediPulse organizes measurements; it does not diagnose. Normal readings do not prove that someone is completely healthy.",
+data:"Your data",dataD:"Everything is stored only in this browser. Export a backup regularly.",restore:"Restore backup",restored:"Backup restored.",badBackup:"That file is not a valid MediPulse backup.",
+delAll:"Delete all MediPulse data",delAllQ:"Delete your profile, all records, notifications and devices from this device? This cannot be undone.",delAllDone:"All data deleted.",
+devices:"Devices",importT:"Import a device result",importH:"Paste the JSON a MediPulse device sends after a completed checkup. Duplicates are ignored.",importBtn:"Import result",
+imported:"Result imported.",dup:"This checkup was already imported.",badPayload:"Invalid payload: ",
+noNotif:"No notifications yet.",markRead:"Mark read",markAll:"Mark all read",nSaved:"A checkup was saved.",nFailed:"A checkup could not be completed.",nExport:"Your data was exported.",nDevice:"A device result was received.",
+useLoc:"Use my location",hosp:"Hospitals",pharm:"Pharmacies",locHint:"Your location is requested only when you tap the button. It is used to find nearby places and is not saved.",
+locDenied:"Location permission was denied. Enable it in your browser settings and try again.",locFail:"Your location could not be determined.",locSecure:"Location needs a secure page (https or localhost).",
+searching:"Searching nearby…",noPlaces:"No places were found within 5 km.",searchFail:"The search failed. Check your connection and try again.",directions:"Directions",call:"Call",srcOSM:"Data from OpenStreetMap contributors",within5:"Within 5 km",
+tryAgain:"Try again",emergCall:"Emergency call",offline:"You appear to be offline.",
+lang:"Language"},
+ar:{signIn:"تسجيل الدخول",signUp:"إنشاء حساب",createAcct:"أنشئ حسابك",password:"كلمة المرور",iAm:"أنا",rolePatient:"مريض",roleDoctor:"طبيب",haveAcct:"لديك حساب بالفعل؟",noAcct:"جديد على MediPulse؟",forgot:"نسيت كلمة المرور؟",resetSent:"تم إرسال رسالة إعادة تعيين كلمة المرور. تحقق من بريدك.",needName:"يرجى إدخال اسمك.",authLoading:"جارٍ التحميل…",logout:"تسجيل الخروج",docMode:"حساب طبيب",fbMissing:"تعذر تحميل الاتصال بالخادم. تحقق من الإنترنت وأعد تحميل الصفحة.",needHost:"تسجيل الدخول يعمل فقط من رابط موقعك المنشور وليس من ملف مفتوح على جهازك.",syncErr:"تعذر الحفظ على الخادم. تحقق من الاتصال.",loadErr:"تعذر تحميل حسابك. تحقق من الاتصال وأعد المحاولة.",eInUse:"هذا البريد لديه حساب بالفعل. سجّل الدخول.",eBad:"البريد أو كلمة المرور غير صحيحة.",eWeak:"يجب ألا تقل كلمة المرور عن 6 أحرف.",eEmail:"أدخل بريداً إلكترونياً صالحاً.",eNet:"لا يوجد اتصال بالإنترنت.",eMany:"محاولات كثيرة. انتظر قليلاً وأعد المحاولة.",eGen:"حدث خطأ. أعد المحاولة.",doctors:"الأطباء",linkCode:"رمز الربط الخاص بك",linkCodeD:"أعطِ هذا الرمز لطبيبك. يرسل لك طلباً ولا تتم مشاركة شيء حتى توافق.",copyCode:"نسخ الرمز",codeCopied:"تم نسخ الرمز.",requests:"طلبات الربط",noRequests:"لا توجد طلبات معلقة.",approve:"موافقة",decline:"رفض",linkedDocs:"الأطباء المرتبطون",noLinked:"لا يوجد أطباء مرتبطون بعد.",unlink:"إلغاء الربط",unlinkQ:"إزالة هذا الربط؟ لن يتمكن الطبيب من رؤية نتائجك.",doctorSees:"يرى الأطباء المرتبطون اسمك ونتائج فحوصاتك فقط.",nReq:"أرسل لك طبيب طلب ربط.",approved:"تم ربط الطبيب.",done:"تم.",patients:"المرضى",docSub:"المرضى المرتبطون بك.",docSub2:"عرض للقراءة فقط لنتائج هذا المريض.",addPatient:"إضافة مريض",patCode:"رمز ربط المريض",sendReq:"إرسال طلب",reqSent:"تم إرسال الطلب. يجب أن يوافق المريض.",badCode:"أدخل الرمز المكوّن من 6 أحرف.",noCode:"لم يُعثر على مريض بهذا الرمز.",reqFail:"تعذر إرسال الطلب. ربما طلبت هذا المريض من قبل.",waitingApproval:"بانتظار موافقة المريض",noPatients:"لا يوجد مرضى مرتبطون بعد",noPatientsHint:"اطلب من المريض رمز الربط وأرسل طلباً.",backList:"المرضى",refresh:"تحديث",unlinkPat:"إلغاء ربط هذا المريض",autoCall:"اتصال تلقائي بالطوارئ عند قراءة حرجة",autoCallD:"إذا كانت القراءة حرجة (نبض أقل من 40 أو أكثر من 150، أو SpO₂ أقل من 90%) يعرض MediPulse تنبيهاً ويحاول الاتصال بعد 10 ثوانٍ ما لم تلغِ. قد تمنع المتصفحات الاتصال التلقائي، لذا زر الاتصال الأحمر هو الخيار الموثوق.",critTitle:"قراءة حرجة",critBody:"هذه القراءة بعيدة جداً عن الحدود الطبيعية. إذا شعرت بتوعك فاتصل بالطوارئ فوراً. MediPulse لا يشخّص.",callNow:"اتصل بالطوارئ الآن",imOk:"أنا بخير، إغلاق",autoIn:"اتصال تلقائي خلال",tag:"رعاية واضحة وقياس موثوق.",home:"الرئيسية",records:"السجلات",nearby:"بالقرب منك",profile:"الملف",notifs:"الإشعارات",
+safety:"مراقبة صحية وليست تشخيصاً",welcome:"صحتك في صورة أوضح.",dash:"تابع فحوصاتك وحالة الجهاز.",
+recordsT:"السجلات الصحية",recordsI:"فحوصاتك محفوظة بشكل خاص على هذا الجهاز.",nearbyT:"الرعاية القريبة",nearbyI:"ابحث عن المستشفيات والصيدليات القريبة منك.",profileT:"ملفك الشخصي",
+latest:"أحدث فحص مكتمل",hr:"معدل ضربات القلب",spo2:"أكسجين الدم",bpm:"نبضة/د",measuredOn:"وقت القياس",noCk:"لا توجد فحوصات مكتملة بعد",
+noCkHint:"عند حفظ فحص أو استلامه من جهاز MediPulse سيظهر هنا. لم يتم استلام أي قياسات.",
+noMeas:"لا يوجد قياس",device:"الجهاز",noDevice:"لا يوجد جهاز مقترن",devHint:"",
+connected:"متصل",disconnected:"غير متصل",connecting:"جارٍ الاتصال",error:"خطأ في الاتصال",
+trend:"اتجاه العلامات الحيوية",d3:"3 أيام",d7:"7 أيام",d30:"شهر",d365:"سنة",all:"الكل",needMore:"يلزم فحصان مكتملان على الأقل في هذه الفترة لعرض الاتجاه.",
+manual:"إضافة قياس يدوياً",hrIn:"معدل النبض (نبضة/د)",spoIn:"SpO₂ (%)",when:"التاريخ والوقت",qual:"الجودة",qNone:"غير مقيّم",good:"جيدة",poor:"ضعيفة",inconc:"غير حاسمة",
+saveM:"حفظ القياس",saved:"تم الحفظ.",savedM:"تم حفظ القياس في سجلك الخاص.",badVals:"أدخل نبضاً بين 20 و250 وSpO₂ بين 50 و100.",
+needConsent:"يرجى الموافقة على حفظ السجلات الصحية قبل الحفظ.",giveConsent:"أوافق",consentGiven:"تم حفظ الموافقة.",
+search:"ابحث برقم الفحص",from:"من",to:"إلى",allSt:"كل الحالات",completed:"مكتمل",failed:"فشل",noRes:"لا توجد سجلات تطابق عوامل التصفية.",count:"سجل",
+status:"الحالة",source:"المصدر",srcManual:"إدخال يدوي",srcDevice:"من الجهاز",deviceId:"معرّف الجهاز",sync:"التخزين",syncLocal:"محفوظ على هذا الجهاز فقط",
+interp:"التفسير",within:"ضمن النطاق الذي ضبطته",outside:"خارج النطاق الذي ضبطته",inconcl:"غير حاسم / غير موثوق",noInterp:"لا تفسير (لم تُضبط نطاقات مرجعية)",
+ranges:"النطاقات المرجعية المستخدمة",rangesNone:"لم تُضبط نطاقات مرجعية، لذلك لا يفسّر MediPulse القراءات.",rangesSet:"النبض {a}–{b} · SpO₂ ≥ {c}%",
+rangesHelp:"اختياري. اضبطها بإرشاد طبيبك فقط. تُقارَن القراءات بها وليست تشخيصاً.",hrMin:"أدنى نبض",hrMax:"أعلى نبض",spoMin:"أدنى SpO₂",
+del:"حذف السجل",delQ:"هل تريد حذف سجل الفحص؟ لا يمكن التراجع.",confirmDel:"نعم، احذف",cancel:"إلغاء",close:"إغلاق",deleted:"تم حذف السجل.",
+exportCsv:"تصدير CSV",exportJson:"نسخة احتياطية (JSON)",exported:"تم تنزيل الملف.",
+fullName:"الاسم الكامل",email:"البريد الإلكتروني",dob:"تاريخ الميلاد",phone:"رقم الهاتف",trusted:"جهة اتصال موثوقة",notShared:"لا تُشارك تلقائياً أبداً",cName:"اسم جهة الاتصال",rel:"صلة القرابة",cPhone:"هاتف جهة الاتصال",callContact:"اتصل بجهة الاتصال الموثوقة",
+consent:"أوافق على حفظ سجلات فحوصاتي الصحية في حسابي الخاص على هذا الجهاز.",consentD:"يمكنك تغيير ذلك لاحقاً. لا تُشارك سجلاتك تلقائياً مع جهة الاتصال الموثوقة.",
+save:"حفظ التغييرات",profSaved:"تم حفظ الملف الشخصي.",notifOn:"إشعارات داخل التطبيق",secAlerts:"تنبيهات الأمان",emerg:"رقم الطوارئ",emergHelp:"يستخدمه زر الاتصال الأحمر. الافتراضي 123 (مصر). غيّره لبلدك.",
+privacy:"الخصوصية والسلامة",privD:"ينظم MediPulse القياسات ولا يشخّص الأمراض. القراءات الطبيعية لا تثبت أن الشخص سليم تماماً.",
+data:"بياناتك",dataD:"كل شيء مخزن في هذا المتصفح فقط. صدّر نسخة احتياطية بانتظام.",restore:"استعادة نسخة احتياطية",restored:"تمت استعادة النسخة.",badBackup:"هذا الملف ليس نسخة MediPulse صالحة.",
+delAll:"حذف كل بيانات MediPulse",delAllQ:"حذف ملفك وكل السجلات والإشعارات والأجهزة من هذا الجهاز؟ لا يمكن التراجع.",delAllDone:"تم حذف كل البيانات.",
+devices:"الأجهزة",importT:"استيراد نتيجة من جهاز",importH:"الصق JSON الذي يرسله جهاز MediPulse بعد فحص مكتمل. تُتجاهل التكرارات.",importBtn:"استيراد النتيجة",
+imported:"تم استيراد النتيجة.",dup:"تم استيراد هذا الفحص من قبل.",badPayload:"بيانات غير صالحة: ",
+noNotif:"لا توجد إشعارات بعد.",markRead:"تمييز كمقروء",markAll:"تمييز الكل كمقروء",nSaved:"تم حفظ فحص.",nFailed:"تعذر إكمال فحص.",nExport:"تم تصدير بياناتك.",nDevice:"تم استلام نتيجة من جهاز.",
+useLoc:"استخدم موقعي",hosp:"المستشفيات",pharm:"الصيدليات",locHint:"لا نطلب موقعك إلا عند الضغط على الزر. يُستخدم للبحث عن أماكن قريبة ولا يُحفظ.",
+locDenied:"تم رفض إذن الموقع. فعّله من إعدادات المتصفح ثم أعد المحاولة.",locFail:"تعذر تحديد موقعك.",locSecure:"يتطلب الموقع صفحة آمنة (https أو localhost).",
+searching:"جارٍ البحث بالقرب منك…",noPlaces:"لم يُعثر على أماكن ضمن 5 كم.",searchFail:"فشل البحث. تحقق من الاتصال وأعد المحاولة.",directions:"الاتجاهات",call:"اتصال",srcOSM:"البيانات من مساهمي OpenStreetMap",within5:"ضمن 5 كم",
+tryAgain:"أعد المحاولة",emergCall:"اتصال طوارئ",offline:"يبدو أنك غير متصل بالإنترنت.",
+lang:"اللغة"},
+fr:{signIn:"Se connecter",signUp:"Créer un compte",createAcct:"Créez votre compte",password:"Mot de passe",iAm:"Je suis",rolePatient:"Patient",roleDoctor:"Médecin",haveAcct:"Vous avez déjà un compte ?",noAcct:"Nouveau sur MediPulse ?",forgot:"Mot de passe oublié ?",resetSent:"E-mail de réinitialisation envoyé. Vérifiez votre boîte.",needName:"Veuillez saisir votre nom.",authLoading:"Chargement…",logout:"Se déconnecter",docMode:"Compte médecin",fbMissing:"La connexion au serveur n'a pas pu se charger. Vérifiez internet et actualisez.",needHost:"La connexion ne fonctionne que depuis le lien de votre site publié, pas depuis un fichier ouvert sur votre ordinateur.",syncErr:"Enregistrement impossible sur le serveur. Vérifiez la connexion.",loadErr:"Impossible de charger votre compte. Vérifiez la connexion et réessayez.",eInUse:"Cet e-mail a déjà un compte. Connectez-vous.",eBad:"E-mail ou mot de passe incorrect.",eWeak:"Le mot de passe doit contenir au moins 6 caractères.",eEmail:"Saisissez une adresse e-mail valide.",eNet:"Pas de connexion internet.",eMany:"Trop de tentatives. Patientez puis réessayez.",eGen:"Une erreur s'est produite. Réessayez.",doctors:"Médecins",linkCode:"Votre code de liaison",linkCodeD:"Donnez ce code à votre médecin. Il vous envoie une demande, et rien n'est partagé avant votre accord.",copyCode:"Copier le code",codeCopied:"Code copié.",requests:"Demandes de liaison",noRequests:"Aucune demande en attente.",approve:"Accepter",decline:"Refuser",linkedDocs:"Médecins liés",noLinked:"Aucun médecin lié.",unlink:"Délier",unlinkQ:"Supprimer ce lien ? Le médecin ne verra plus vos résultats.",doctorSees:"Les médecins liés voient uniquement votre nom et vos résultats.",nReq:"Un médecin vous a envoyé une demande de liaison.",approved:"Médecin lié.",done:"Terminé.",patients:"Patients",docSub:"Patients liés à vous.",docSub2:"Vue en lecture seule des résultats de ce patient.",addPatient:"Ajouter un patient",patCode:"Code de liaison du patient",sendReq:"Envoyer la demande",reqSent:"Demande envoyée. Le patient doit l'accepter.",badCode:"Saisissez le code à 6 caractères.",noCode:"Aucun patient trouvé avec ce code.",reqFail:"Envoi impossible. Vous avez peut-être déjà demandé ce patient.",waitingApproval:"En attente de l'accord du patient",noPatients:"Aucun patient lié",noPatientsHint:"Demandez son code de liaison à un patient et envoyez une demande.",backList:"Patients",refresh:"Actualiser",unlinkPat:"Délier ce patient",autoCall:"Appel d'urgence auto si mesure critique",autoCallD:"Si une mesure est critique (fréquence < 40 ou > 150, SpO₂ < 90 %), MediPulse affiche une alerte et tente d'appeler après 10 s sauf annulation. Les navigateurs peuvent bloquer l'appel automatique ; le bouton rouge reste le plus fiable.",critTitle:"Mesure critique",critBody:"Cette mesure est très hors des limites normales. En cas de malaise, appelez les secours maintenant. MediPulse ne pose pas de diagnostic.",callNow:"Appeler les urgences",imOk:"Ça va, fermer",autoIn:"Appel automatique dans",tag:"Des soins clairement mesurés.",home:"Accueil",records:"Dossiers",nearby:"À proximité",profile:"Profil",notifs:"Notifications",
+safety:"Suivi de santé, pas un diagnostic",welcome:"Votre santé en clair.",dash:"Une vue claire de vos bilans et de l'état de l'appareil.",
+recordsT:"Dossiers de santé",recordsI:"Vos bilans, enregistrés en privé sur cet appareil.",nearbyT:"Soins à proximité",nearbyI:"Trouvez hôpitaux et pharmacies près de vous.",profileT:"Votre profil",
+latest:"Dernier bilan terminé",hr:"Fréquence cardiaque",spo2:"Oxygène sanguin",bpm:"bpm",measuredOn:"Mesuré le",noCk:"Aucun bilan terminé",
+noCkHint:"Lorsque vous enregistrez un bilan ou en recevez un d'un appareil MediPulse, il apparaîtra ici. Aucune mesure reçue.",
+noMeas:"Aucune mesure",device:"Appareil",noDevice:"Aucun appareil associé",devHint:"",
+connected:"Connecté",disconnected:"Déconnecté",connecting:"Connexion",error:"Erreur de connexion",
+trend:"Tendance des signes vitaux",d3:"3 jours",d7:"7 jours",d30:"1 mois",d365:"1 an",all:"Tout",needMore:"Au moins deux bilans terminés sur cette période sont nécessaires pour afficher une tendance.",
+manual:"Ajouter une mesure manuellement",hrIn:"Fréquence cardiaque (bpm)",spoIn:"SpO₂ (%)",when:"Date et heure",qual:"Qualité",qNone:"Non évaluée",good:"Bonne",poor:"Faible",inconc:"Non concluante",
+saveM:"Enregistrer la mesure",saved:"Enregistré.",savedM:"Mesure enregistrée dans votre historique privé.",badVals:"Saisissez une fréquence de 20–250 et une SpO₂ de 50–100.",
+needConsent:"Veuillez consentir au stockage des données de santé avant d'enregistrer.",giveConsent:"Donner mon consentement",consentGiven:"Consentement enregistré.",
+search:"Rechercher un ID de bilan",from:"Du",to:"Au",allSt:"Tous les statuts",completed:"Terminé",failed:"Échec",noRes:"Aucun dossier ne correspond à ces filtres.",count:"dossiers",
+status:"Statut",source:"Source",srcManual:"Saisie manuelle",srcDevice:"Depuis l'appareil",deviceId:"ID de l'appareil",sync:"Stockage",syncLocal:"Enregistré sur cet appareil uniquement",
+interp:"Interprétation",within:"Dans la plage que vous avez définie",outside:"Hors de la plage que vous avez définie",inconcl:"Non concluant / peu fiable",noInterp:"Aucune interprétation (aucune plage de référence définie)",
+ranges:"Plages de référence utilisées",rangesNone:"Aucune plage de référence n'est définie : MediPulse n'interprète donc pas les mesures.",rangesSet:"Fréquence {a}–{b} bpm · SpO₂ ≥ {c}%",
+rangesHelp:"Facultatif. Ne les définissez qu'avec l'avis de votre médecin. Les mesures y sont comparées ; ce n'est pas un diagnostic.",hrMin:"Fréquence min",hrMax:"Fréquence max",spoMin:"SpO₂ min",
+del:"Supprimer le dossier",delQ:"Supprimer ce bilan ? Cette action est irréversible.",confirmDel:"Oui, supprimer",cancel:"Annuler",close:"Fermer",deleted:"Dossier supprimé.",
+exportCsv:"Exporter en CSV",exportJson:"Sauvegarde (JSON)",exported:"Fichier téléchargé.",
+fullName:"Nom complet",email:"E-mail",dob:"Date de naissance",phone:"Téléphone",trusted:"Contact de confiance",notShared:"Jamais partagé automatiquement",cName:"Nom du contact",rel:"Lien de parenté",cPhone:"Téléphone du contact",callContact:"Appeler le contact de confiance",
+consent:"Je consens au stockage de mes bilans de santé dans mon compte privé sur cet appareil.",consentD:"Vous pouvez changer cela plus tard. Vos dossiers ne sont jamais partagés automatiquement avec votre contact de confiance.",
+save:"Enregistrer",profSaved:"Profil enregistré.",notifOn:"Notifications dans l'app",secAlerts:"Alertes de sécurité",emerg:"Numéro d'urgence",emergHelp:"Utilisé par le bouton d'appel rouge. 123 par défaut (Égypte). Modifiez-le pour votre pays.",
+privacy:"Confidentialité et sécurité",privD:"MediPulse organise les mesures ; il ne pose pas de diagnostic. Des valeurs normales ne prouvent pas qu'une personne est en parfaite santé.",
+data:"Vos données",dataD:"Tout est stocké uniquement dans ce navigateur. Exportez une sauvegarde régulièrement.",restore:"Restaurer une sauvegarde",restored:"Sauvegarde restaurée.",badBackup:"Ce fichier n'est pas une sauvegarde MediPulse valide.",
+delAll:"Supprimer toutes les données MediPulse",delAllQ:"Supprimer votre profil, tous les dossiers, notifications et appareils de cet appareil ? Irréversible.",delAllDone:"Toutes les données ont été supprimées.",
+devices:"Appareils",importT:"Importer un résultat d'appareil",importH:"Collez le JSON envoyé par un appareil MediPulse après un bilan terminé. Les doublons sont ignorés.",importBtn:"Importer le résultat",
+imported:"Résultat importé.",dup:"Ce bilan a déjà été importé.",badPayload:"Données invalides : ",
+noNotif:"Aucune notification.",markRead:"Marquer comme lu",markAll:"Tout marquer comme lu",nSaved:"Un bilan a été enregistré.",nFailed:"Un bilan n'a pas pu être terminé.",nExport:"Vos données ont été exportées.",nDevice:"Un résultat d'appareil a été reçu.",
+useLoc:"Utiliser ma position",hosp:"Hôpitaux",pharm:"Pharmacies",locHint:"Votre position n'est demandée que lorsque vous touchez le bouton. Elle sert à trouver des lieux proches et n'est pas enregistrée.",
+locDenied:"L'accès à la position a été refusé. Activez-le dans les réglages du navigateur puis réessayez.",locFail:"Impossible de déterminer votre position.",locSecure:"La localisation nécessite une page sécurisée (https ou localhost).",
+searching:"Recherche à proximité…",noPlaces:"Aucun lieu trouvé dans un rayon de 5 km.",searchFail:"La recherche a échoué. Vérifiez votre connexion et réessayez.",directions:"Itinéraire",call:"Appeler",srcOSM:"Données des contributeurs OpenStreetMap",within5:"Dans 5 km",
+tryAgain:"Réessayer",emergCall:"Appel d'urgence",offline:"Vous semblez hors ligne.",
+lang:"Langue"}};
+
+/* ================= storage ================= */
+const KEY="medipulse:v1";
+const blank=()=>({v:1,lang:"en",profile:{name:"",email:"",dob:"",phone:"",cName:"",cRel:"",cPhone:"",consentAt:null,notif:true,sec:true,emerg:"123",autoCall:false},
+ ranges:{hrMin:null,hrMax:null,spoMin:null},checkups:[],notifications:[],devices:[]});
+let mem=null;
+function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);const b=blank();return{...b,...d,profile:{...b.profile,...(d.profile||{})},ranges:{...b.ranges,...(d.ranges||{})}}}}catch(e){}return mem||blank()}
+let S=blank();try{S.lang=localStorage.getItem("medipulse:lang")||"en"}catch(e){}
+let ME=null,AUTH="loading",auth=null,db=null,fbReady=false,unsubLinks=null,ptm=null;
+function persist(){if(!ME)return;clearTimeout(ptm);ptm=setTimeout(saveCloud,350)}
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():"id-"+Date.now()+"-"+Math.random().toString(36).slice(2,10));
+
+/* ================= helpers ================= */
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const t=k=>(T[S.lang]&&T[S.lang][k])||T.en[k]||k;
+const loc=()=>S.lang;
+const fmtDT=d=>new Intl.DateTimeFormat(loc(),{dateStyle:"medium",timeStyle:"short"}).format(new Date(d));
+const fmtD=d=>new Intl.DateTimeFormat(loc(),{dateStyle:"medium"}).format(new Date(d));
+const fmtShort=d=>new Intl.DateTimeFormat(loc(),{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(d));
+const telClean=s=>String(s||"").replace(/[^\d+]/g,"");
+const sorted=()=>[...S.checkups].sort((a,b)=>new Date(b.at)-new Date(a.at));
+const latestDone=()=>sorted().find(c=>c.status==="completed"&&(c.hr!=null||c.spo2!=null));
+const ico={
+home:'<path d="M3 11l9-8 9 8v10H3z"/>',rec:'<path d="M12 21s-8-5-8-11a5 5 0 0 1 8-3 5 5 0 0 1 8 3c0 6-8 11-8 11z"/>',
+pin:'<path d="M12 22s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21h4"/>',phone:'<path d="M5 4h4l2 5-2 1a11 11 0 0 0 5 5l1-2 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+lang:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',chev:'<path d="M9 6l6 6-6 6"/>',out:'<path d="M9 21H5V3h4M16 17l5-5-5-5M21 12H9"/>',doc:'<path d="M5 3v6a4 4 0 0 0 8 0V3"/><path d="M9 13v2a5 5 0 0 0 10 0v-2"/><circle cx="19" cy="11" r="2"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M17 4a3.5 3.5 0 0 1 0 7M22 21c0-3-2-5-5-5.5"/>'};
+const I=(n,c="")=>`<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden="true">${ico[n]||""}</svg>`;
+const LOGO='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#1d3b57"/><path d="M10 33h12l5-12 8 24 6-16 3 4h10" fill="none" stroke="#1BB7B0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function interpret(c){
+ if(c.status!=="completed"||c.quality==="poor"||c.quality==="inconclusive")return"inconclusive";
+ const r=S.ranges;if(r.hrMin==null&&r.hrMax==null&&r.spoMin==null)return null;
+ let ok=true;
+ if(c.hr!=null){if(r.hrMin!=null&&c.hr<r.hrMin)ok=false;if(r.hrMax!=null&&c.hr>r.hrMax)ok=false}
+ if(c.spo2!=null&&r.spoMin!=null&&c.spo2<r.spoMin)ok=false;
+ return ok?"within":"outside";
+}
+const interpLabel=i=>i==="within"?t("within"):i==="outside"?t("outside"):i==="inconclusive"?t("inconcl"):t("noInterp");
+const interpPill=i=>i==="within"?"ok":i==="outside"?"warn":"";
+const rangesText=()=>{const r=S.ranges;if(r.hrMin==null&&r.hrMax==null&&r.spoMin==null)return t("rangesNone");
+ return t("rangesSet").replace("{a}",r.hrMin??"—").replace("{b}",r.hrMax??"—").replace("{c}",r.spoMin??"—")};
+const qLabel=q=>q==="good"?t("good"):q==="poor"?t("poor"):q==="inconclusive"?t("inconc"):t("qNone");
+
+function addNote(type,key){
+ if(type==="security"?!S.profile.sec:!S.profile.notif)return;
+ S.notifications.unshift({id:uid(),type,key,at:new Date().toISOString(),read:false});
+ S.notifications=S.notifications.slice(0,200);
+}
+function toast(m){const e=document.getElementById("toast");e.innerHTML=`<div class="toast" role="status">${esc(m)}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>e.innerHTML="",2800)}
+
+/* ================= UI state ================= */
+const ui={authMode:"in",links:[],pat:{},patUid:null,signup:null,alert:null,section:"home",period:7,q:"",from:"",to:"",st:"all",sel:null,confirm:null,kind:"hospital",fac:{pos:null,list:[],msg:"",loading:false}};
+
+const CRIT={hrLow:40,hrHigh:150,spo2Low:90};
+function isCritical(c){return c.status==="completed"&&c.quality!=="poor"&&c.quality!=="inconclusive"&&((c.hr!=null&&(c.hr<CRIT.hrLow||c.hr>CRIT.hrHigh))||(c.spo2!=null&&c.spo2<CRIT.spo2Low))}
+let alertTimer=null;
+function stopAlert(){clearInterval(alertTimer);alertTimer=null;ui.alert=null}
+function dialEmergency(){location.href="tel:"+(telClean(S.profile.emerg)||"123")}
+function triggerCritical(c){
+ if(!isCritical(c))return;
+ ui.alert={id:c.id,left:10};clearInterval(alertTimer);
+ if(S.profile.autoCall){alertTimer=setInterval(()=>{
+  if(!ui.alert)return stopAlert();
+  ui.alert.left--;
+  if(ui.alert.left<=0){stopAlert();render();dialEmergency()}
+  else{const e=document.getElementById("cd");if(e)e.textContent=ui.alert.left}
+ },1000)}
+}
+
+/* ================= accounts (Firebase) ================= */
+const isDoc=()=>ME&&ME.role==="doctor";
+function header(){return isDoc()?headerD():headerP()}
+function nav(){return isDoc()?navD():navP()}
+function headerD(){const nxt={en:"ar",ar:"fr",fr:"en"}[S.lang];const lbl={en:"عربي",ar:"FR",fr:"EN"}[S.lang];
+ return`<header class="hdr"><div class="brand">${LOGO}<div><b>MediPulse</b><span>${esc(t("docMode"))}</span></div></div><div class="acts"><button class="ib" data-a="lang" data-v="${nxt}" aria-label="${esc(t("lang"))}">${I("lang")}<span>${lbl}</span></button><button class="ib" data-a="logout" aria-label="${esc(t("logout"))}">${I("out")}</button></div></header>`}
+function navD(){const it=[["patients","users","patients"],["dprofile","user","profile"]];const cur=ui.section==="patient"?"patients":ui.section;
+ return`<nav class="bn" aria-label="Menu">${it.map(([id,ic,k])=>`<button data-a="go" data-v="${id}" class="${cur===id?"on":""}">${I(ic)}<span>${esc(t(k))}</span></button>`).join("")}</nav>`}
+function authMsg(e){const c=e&&e.code||"";
+ return t(c==="auth/email-already-in-use"?"eInUse":["auth/invalid-credential","auth/wrong-password","auth/user-not-found"].includes(c)?"eBad":c==="auth/weak-password"?"eWeak":c==="auth/invalid-email"?"eEmail":c==="auth/network-request-failed"?"eNet":c==="auth/too-many-requests"?"eMany":"eGen")}
+function authView(){
+ if(AUTH==="loading")return`<div class="empty" style="padding:90px 16px"><b>MediPulse</b>${esc(t("authLoading"))}</div>`;
+ const up=ui.authMode==="up";const nxt={en:"ar",ar:"fr",fr:"en"}[S.lang];const lbl={en:"عربي",ar:"FR",fr:"EN"}[S.lang];
+ const warn=!fbReady?t("fbMissing"):location.protocol==="file:"?t("needHost"):"";
+ return`<main style="max-width:440px"><div class="row sb" style="margin-top:10px"><div class="brand" style="color:var(--navy)">${LOGO}<div><b>MediPulse</b><span style="color:var(--mut)">${esc(t("tag"))}</span></div></div><button class="btn sec sm" data-a="lang" data-v="${nxt}">${lbl}</button></div>
+ <section class="card"><h1 style="font-size:22px">${esc(up?t("createAcct"):t("signIn"))}</h1>${warn?`<div class="note warn"><span>${esc(warn)}</span></div>`:""}
+ <form id="af">${up?`<label class="f">${esc(t("fullName"))}<input name="nm" maxlength="120" autocomplete="name" required></label><label class="f">${esc(t("iAm"))}<select name="role"><option value="patient">${esc(t("rolePatient"))}</option><option value="doctor">${esc(t("roleDoctor"))}</option></select></label>`:""}
+ <label class="f">${esc(t("email"))}<input name="email" type="email" autocomplete="email" required></label>
+ <label class="f">${esc(t("password"))}<input name="pw" type="password" minlength="6" autocomplete="${up?"new-password":"current-password"}" required></label>
+ <p style="margin-top:14px"><button class="btn" type="submit" style="width:100%">${esc(up?t("signUp"):t("signIn"))}</button></p></form>
+ ${up?"":`<p><button class="btn link" data-a="forgot">${esc(t("forgot"))}</button></p>`}
+ <p class="sub" style="text-align:center">${esc(up?t("haveAcct"):t("noAcct"))} <button class="btn link" data-a="authmode" data-v="${up?"in":"up"}">${esc(up?t("signIn"):t("signUp"))}</button></p>
+ <p class="login-ok">${esc(t("privD"))}</p></section></main>`}
+async function doAuth(f){
+ if(!fbReady)return toast(t("fbMissing"));
+ const em=f.elements.email.value.trim(),pw=f.elements.pw.value;const b=f.querySelector("button[type=submit]");b.disabled=true;
+ try{
+  if(ui.authMode==="up"){const nm=f.elements.nm.value.trim();if(!nm){b.disabled=false;return toast(t("needName"))}
+   ui.signup={role:f.elements.role.value,name:nm};await auth.createUserWithEmailAndPassword(em,pw)}
+  else await auth.signInWithEmailAndPassword(em,pw);
+ }catch(e){ui.signup=null;toast(authMsg(e))}
+ b.disabled=false}
+function doForgot(){const i=document.querySelector("#af [name=email]");const em=i&&i.value.trim();if(!em)return toast(t("eEmail"));
+ auth.sendPasswordResetEmail(em).then(()=>toast(t("resetSent"))).catch(e=>toast(authMsg(e)))}
+async function doLogout(){stopAlert();clearTimeout(ptm);try{await saveCloud()}catch(_){}if(unsubLinks){unsubLinks();unsubLinks=null}await auth.signOut()}
+async function saveCloud(){
+ if(!ME||!db)return;
+ try{const cl=o=>JSON.parse(JSON.stringify(o));const nm=S.profile.name||ME.name||"";const b=db.batch();
+  b.set(db.collection("users").doc(ME.uid),cl({role:ME.role,code:ME.code||null,name:nm,profile:S.profile,notifications:S.notifications,devices:S.devices}));
+  if(ME.role==="patient")b.set(db.collection("records").doc(ME.uid),cl({name:nm,ranges:S.ranges,checkups:S.checkups}));
+  await b.commit()}catch(e){toast(t("syncErr"))}}
+async function makeCode(uid){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+ for(let i=0;i<8;i++){let c="";crypto.getRandomValues(new Uint8Array(6)).forEach(x=>c+=A[x%A.length]);
+  try{await db.collection("codes").doc(c).set({uid});return c}catch(e){}}
+ throw new Error("code")}
+async function loadUser(u){
+ const snap=await db.collection("users").doc(u.uid).get();let d=snap.exists?snap.data():null,isNew=false;
+ if(!d){const p=ui.signup||{role:"patient",name:""};d={role:p.role==="doctor"?"doctor":"patient",name:p.name,code:null};isNew=true}
+ ME={uid:u.uid,role:d.role,code:d.code||null,name:d.name||"",email:u.email||""};
+ const l=S.lang;S=blank();S.lang=l;Object.assign(S.profile,d.profile||{});
+ if(!S.profile.name)S.profile.name=ME.name;S.profile.email=ME.email;
+ S.notifications=d.notifications||[];S.devices=d.devices||[];
+ if(ME.role==="patient"){
+  const rs=await db.collection("records").doc(u.uid).get();
+  if(rs.exists){const r=rs.data();S.ranges={...S.ranges,...(r.ranges||{})};S.checkups=r.checkups||[]}
+  if(!ME.code){ME.code=await makeCode(u.uid);isNew=true}}
+ ui.signup=null;ui.section=ME.role==="doctor"?"patients":"home";ui.sel=null;ui.confirm=null;ui.links=[];ui.pat={};
+ if(isNew)await saveCloud();
+ AUTH="in";listenLinks();render()}
+function listenLinks(){
+ const fld=ME.role==="doctor"?"doctorUid":"patientUid";
+ unsubLinks=db.collection("links").where(fld,"==",ME.uid).onSnapshot(sn=>{
+  ui.links=sn.docs.map(d=>({id:d.id,...d.data()}));
+  if(ME.role==="doctor"){const act=ui.links.filter(x=>x.status==="active").map(x=>x.patientUid);
+   Object.keys(ui.pat).forEach(k=>{if(!act.includes(k))delete ui.pat[k]});act.forEach(p=>loadPat(p))}
+  else{let ch=false;ui.links.filter(x=>x.status==="pending").forEach(x=>{if(!S.notifications.some(n=>n.lid===x.id)){S.notifications.unshift({id:uid(),type:"security",key:"nReq",lid:x.id,at:new Date().toISOString(),read:false});ch=true}});if(ch)persist()}
+  render()},()=>{})}
+async function loadPat(pid,force){
+ if(ui.pat[pid]&&!force)return;
+ try{const r=await db.collection("records").doc(pid).get();if(r.exists){ui.pat[pid]=r.data();render()}}catch(e){toast(t("syncErr"))}}
+async function doLink(f){
+ const code=f.elements.code.value.trim().toUpperCase();
+ if(!/^[A-Z0-9]{6}$/.test(code))return toast(t("badCode"));
+ try{const c=await db.collection("codes").doc(code).get();if(!c.exists||c.data().uid===ME.uid)return toast(t("noCode"));
+  const pid=c.data().uid;
+  await db.collection("links").doc(ME.uid+"_"+pid).set({doctorUid:ME.uid,patientUid:pid,doctorName:S.profile.name||ME.name,code,status:"pending",at:new Date().toISOString()});
+  toast(t("reqSent"));f.reset()}catch(e){toast(t("reqFail"))}}
+const latestOf=a=>[...(a||[])].sort((x,y)=>new Date(y.at)-new Date(x.at)).find(c=>c.status==="completed"&&(c.hr!=null||c.spo2!=null));
+function docRow(c){const done=c.status==="completed";
+ return`<div class="rec" style="cursor:default"><span class="m"><b>${esc(fmtDT(c.at))}</b><small>${esc(c.checkupId)} · ${esc(c.source==="device"?t("srcDevice"):t("srcManual"))} · ${esc(qLabel(c.quality))}</small></span><span class="vals">${c.hr==null?"—":c.hr+' <small>'+esc(t("bpm"))+'</small>'}<br>${c.spo2==null?"—":c.spo2+'<small>%</small>'}</span>${isCritical(c)?`<span class="pill bad">${esc(t("critTitle"))}</span>`:`<span class="pill ${done?"ok":"bad"}">${esc(done?t("completed"):t("failed"))}</span>`}</div>`}
+function viewDocPatients(){
+ const act=ui.links.filter(x=>x.status==="active"),pen=ui.links.filter(x=>x.status!=="active");
+ const row=x=>{const d=ui.pat[x.patientUid];const ck=d?latestOf(d.checkups):null;
+  return`<button class="rec" data-a="openPat" data-v="${esc(x.patientUid)}"><span class="m"><b>${esc(d?d.name||"—":"…")}</b><small>${ck?esc(fmtDT(ck.at)):esc(t("noCk"))}</small></span><span class="vals">${ck&&ck.hr!=null?ck.hr+' <small>'+esc(t("bpm"))+'</small>':"—"}<br>${ck&&ck.spo2!=null?ck.spo2+'<small>%</small>':"—"}</span>${ck&&isCritical(ck)?`<span class="pill bad">${esc(t("critTitle"))}</span>`:""}${I("chev")}</button>`};
+ return`${heading(t("patients"),t("docSub"),"MediPulse")}
+ <section class="card"><h2>${esc(t("addPatient"))}</h2><form id="lf"><label class="f">${esc(t("patCode"))}<input name="code" maxlength="6" autocomplete="off" dir="ltr" style="text-transform:uppercase;letter-spacing:.15em" required></label><p style="margin-top:12px"><button class="btn" type="submit">${esc(t("sendReq"))}</button></p></form>
+ ${pen.map(x=>`<div class="rec" style="cursor:default"><span class="m"><b dir="ltr">${esc(x.code||"")}</b><small>${esc(t("waitingApproval"))}</small></span><button class="btn danger sm" data-a="docunlink" data-v="${esc(x.id)}">${esc(t("cancel"))}</button></div>`).join("")}</section>
+ <section class="card"><h2>${esc(t("patients"))}</h2>${act.length?act.map(row).join(""):`<div class="empty"><b>${esc(t("noPatients"))}</b>${esc(t("noPatientsHint"))}</div>`}</section>`}
+function viewDocPatient(){
+ const pid=ui.patUid,d=ui.pat[pid];const lk=ui.links.find(x=>x.patientUid===pid&&x.status==="active");
+ if(!lk){ui.section="patients";return viewDocPatients()}
+ const list=d?[...(d.checkups||[])].sort((a,b)=>new Date(b.at)-new Date(a.at)):[];const l=d?latestOf(d.checkups):null;
+ return`<p><button class="btn sec sm" data-a="backPat">‹ ${esc(t("backList"))}</button> <button class="btn sec sm" data-a="refPat">${esc(t("refresh"))}</button></p>
+ ${heading(d?d.name||"—":"…",t("docSub2"),"MediPulse")}
+ ${d?`<div class="grid c2" style="margin-top:14px">${metric(t("hr"),l?.hr,t("bpm"),"",l?.hr==null?t("noMeas"):t("measuredOn")+" "+fmtDT(l.at))}${metric(t("spo2"),l?.spo2,"%","b",l?.spo2==null?t("noMeas"):t("measuredOn")+" "+fmtDT(l.at))}</div>${trendPanel(d.checkups||[])}
+ <section class="card"><h2>${esc(t("recordsT"))}</h2><p class="sub">${list.length} ${esc(t("count"))}</p>${list.length?list.map(docRow).join(""):`<div class="empty"><b>${esc(t("noCk"))}</b></div>`}</section>`:`<div class="empty">${esc(t("authLoading"))}</div>`}
+ <p style="margin-top:14px"><button class="btn danger" data-a="docunlink" data-v="${esc(lk.id)}">${esc(t("unlinkPat"))}</button></p>`}
+function viewDocProfile(){
+ return`${heading(t("profileT"),t("docSub"),"MediPulse")}<form id="dpf" class="card"><label class="f">${esc(t("fullName"))}<input name="name" maxlength="160" value="${esc(S.profile.name)}"></label><label class="f">${esc(t("email"))}<input value="${esc(ME.email)}" disabled></label><p style="margin-top:14px"><button class="btn" type="submit">${esc(t("save"))}</button></p></form><section class="card"><button class="btn danger" data-a="logout">${esc(t("logout"))}</button></section>`}
+function viewDoctors(){
+ const pen=ui.links.filter(x=>x.status==="pending"),act=ui.links.filter(x=>x.status==="active");
+ return`${heading(t("doctors"),t("doctorSees"),"MediPulse")}
+ <section class="card"><h2>${esc(t("linkCode"))}</h2><p dir="ltr" style="font-size:34px;font-weight:700;letter-spacing:.15em;text-align:center;margin:10px 0">${esc(ME.code||"—")}</p><p class="sub">${esc(t("linkCodeD"))}</p><p><button class="btn sec sm" data-a="copycode">${esc(t("copyCode"))}</button></p></section>
+ <section class="card"><h2>${esc(t("requests"))}</h2>${pen.length?pen.map(x=>`<div class="rec" style="cursor:default"><span class="m"><b>${esc(x.doctorName||"—")}</b><small>${esc(fmtDT(x.at))}</small></span><button class="btn sm" data-a="approve" data-v="${esc(x.id)}">${esc(t("approve"))}</button><button class="btn danger sm" data-a="decline" data-v="${esc(x.id)}">${esc(t("decline"))}</button></div>`).join(""):`<div class="empty">${esc(t("noRequests"))}</div>`}</section>
+ <section class="card"><h2>${esc(t("linkedDocs"))}</h2>${act.length?act.map(x=>`<div class="rec" style="cursor:default"><span class="m"><b>${esc(x.doctorName||"—")}</b></span><button class="btn danger sm" data-a="unlink" data-v="${esc(x.id)}">${esc(t("unlink"))}</button></div>`).join(""):`<div class="empty">${esc(t("noLinked"))}</div>`}</section>`}
+
+/* ================= views ================= */
+function headerP(){
+ const un=S.notifications.filter(n=>!n.read).length;
+ const nxt={en:"ar",ar:"fr",fr:"en"}[S.lang];const lbl={en:"عربي",ar:"FR",fr:"EN"}[S.lang];
+ return`<header class="hdr"><div class="brand">${LOGO}<div><b>MediPulse</b><span>${esc(t("tag"))}</span></div></div>
+ <div class="acts"><a class="ib sos" href="tel:${esc(telClean(S.profile.emerg)||"123")}" aria-label="${esc(t("emergCall"))}" title="${esc(t("emergCall"))}">${I("phone")}</a>
+ <button class="ib" data-a="lang" data-v="${nxt}" aria-label="${esc(t("lang"))}">${I("lang")}<span>${lbl}</span></button>
+ <button class="ib" data-a="go" data-v="notifications" aria-label="${esc(t("notifs"))}">${I("bell")}${un?'<i class="dot"></i>':""}</button><button class="ib" data-a="logout" aria-label="${esc(t("logout"))}">${I("out")}</button></div></header>`;
+}
+function navP(){
+ const items=[["home","home","home"],["records","rec","records"],["nearby","pin","nearby"],["doctors","doc","doctors"],["profile","user","profile"]];
+ return`<nav class="bn" aria-label="Menu">${items.map(([id,ic,k])=>`<button data-a="go" data-v="${id}" class="${ui.section===id?"on":""}" ${ui.section===id?'aria-current="page"':""}>${I(ic)}<span>${esc(t(k))}</span></button>`).join("")}</nav>`;
+}
+function heading(title,subtitle,eyebrow){return`<div><span class="eyebrow">${esc(eyebrow||t("safety"))}</span><h1>${esc(title)}</h1><p class="sub">${esc(subtitle)}</p></div>`}
+
+function metric(label,val,unit,cls,foot){
+ return`<div class="metric ${cls}"><div class="l">${esc(label)}</div><div class="v">${val==null?"—":esc(val)}<small>${val==null?"":esc(unit)}</small></div><div class="f">${esc(foot)}</div></div>`;
+}
+function recRow(c){
+ const done=c.status==="completed";
+ return`<button class="rec" data-a="open" data-v="${esc(c.id)}"><span class="m"><b>${esc(c.checkupId)}</b><small>${esc(fmtDT(c.at))} · ${esc(c.source==="device"?t("srcDevice"):t("srcManual"))}</small></span>
+ <span class="vals">${c.hr==null?"—":c.hr+' <small>'+esc(t("bpm"))+'</small>'}<br>${c.spo2==null?"—":c.spo2+'<small>%</small>'}</span>
+ <span class="pill ${done?"ok":"bad"}">${esc(done?t("completed"):t("failed"))}</span>${I("chev")}</button>`;
+}
+function devState(){
+ const d=S.devices[0];if(!d)return{label:t("noDevice"),cls:"",hint:t("devHint")};
+ const m={connected:["connected","ok"],disconnected:["disconnected",""],connecting:["connecting","warn"],error:["error","bad"]}[d.status]||["disconnected",""];
+ return{label:t(m[0]),cls:m[1],hint:(d.name||d.deviceId)+" · "+t("devHint")};
+}
+
+/* ---- chart (inline SVG, no libraries) ---- */
+function chart(points,color,label,unit){
+ const W=600,H=190,L=38,R=12,Tp=14,B=30;
+ const xs=points.map(p=>new Date(p.at).getTime());const ys=points.map(p=>p.v);
+ const x0=Math.min(...xs),x1=Math.max(...xs);let y0=Math.min(...ys),y1=Math.max(...ys);if(y0===y1){y0-=2;y1+=2}
+ const pad=(y1-y0)*.15;y0-=pad;y1+=pad;
+ const X=v=>L+(x1===x0?(W-L-R)/2:(v-x0)/(x1-x0)*(W-L-R));const Y=v=>Tp+(1-(v-y0)/(y1-y0))*(H-Tp-B);
+ const path=points.map((p,i)=>(i?"L":"M")+X(new Date(p.at).getTime()).toFixed(1)+" "+Y(p.v).toFixed(1)).join(" ");
+ const ticks=[0,.5,1].map(f=>y0+(y1-y0)*f);
+ return`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
+ ${ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3ebf0"/><text x="${L-6}" y="${Y(v)+3}" text-anchor="end">${Math.round(v)}</text>`).join("")}
+ <path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>
+ ${points.map(p=>`<circle cx="${X(new Date(p.at).getTime())}" cy="${Y(p.v)}" r="4" fill="${color}"><title>${esc(fmtShort(p.at))}: ${p.v}${esc(unit)}</title></circle>`).join("")}
+ <text x="${L}" y="${H-8}" text-anchor="start">${esc(fmtShort(x0))}</text><text x="${W-R}" y="${H-8}" text-anchor="end">${esc(fmtShort(x1))}</text></svg>`;
+}
+function trendPanel(src){src=src||S.checkups;
+ const per=ui.period;const cut=per===0?0:Date.now()-per*864e5;
+ const recs=src.filter(c=>c.status==="completed"&&new Date(c.at).getTime()>=cut).sort((a,b)=>new Date(a.at)-new Date(b.at));
+ const hrP=recs.filter(c=>c.hr!=null).map(c=>({at:c.at,v:c.hr}));const spP=recs.filter(c=>c.spo2!=null).map(c=>({at:c.at,v:c.spo2}));
+ const opts=[[3,"d3"],[7,"d7"],[30,"d30"],[365,"d365"],[0,"all"]];
+ return`<section class="card"><div class="row sb"><div><span class="eyebrow">${esc(t("trend"))}</span><h2>${esc(t("trend"))}</h2></div>${I("pulse")}</div>
+ <div class="seg" role="group">${opts.map(([v,k])=>`<button data-a="period" data-v="${v}" class="${per===v?"on":""}" aria-pressed="${per===v}">${esc(t(k))}</button>`).join("")}</div>
+ ${hrP.length<2&&spP.length<2?`<div class="empty">${esc(t("needMore"))}</div>`:`<div class="grid c2">
+ <div><b>${esc(t("hr"))}</b>${hrP.length>=2?chart(hrP,"#12aaa5",t("hr"),"")+"":`<div class="empty">${esc(t("needMore"))}</div>`}</div>
+ <div><b>${esc(t("spo2"))}</b>${spP.length>=2?chart(spP,"#3478ae",t("spo2"),"%"):`<div class="empty">${esc(t("needMore"))}</div>`}</div></div>`}</section>`;
+}
+
+function viewHome(){
+ const l=latestDone();const ds=devState();const rec=sorted().slice(0,3);
+ return`${heading(t("welcome"),t("dash"))}
+ 
+ <div class="grid c3" style="margin-top:14px">
+ ${metric(t("hr"),l?.hr,t("bpm"),"",l?.hr==null?t("noMeas"):t("measuredOn")+" "+fmtDT(l.at))}
+ ${metric(t("spo2"),l?.spo2,"%","b",l?.spo2==null?t("noMeas"):t("measuredOn")+" "+fmtDT(l.at))}
+ <div class="card" style="margin:0"><span class="eyebrow">${esc(t("latest"))}</span>${l?`<p><b>${esc(fmtDT(l.at))}</b></p><p class="sub">${esc(l.checkupId)}</p><p>${l.source==="device"?esc(t("srcDevice")):esc(t("srcManual"))}</p><button class="btn link" data-a="open" data-v="${esc(l.id)}">${esc(t("recordsT"))} ›</button>`:`<p><b>${esc(t("noCk"))}</b></p><p class="sub">${esc(t("noCkHint"))}</p><button class="btn link" data-a="go" data-v="records">${esc(t("manual"))} ›</button>`}</div></div>
+ ${trendPanel()}
+ <section class="card"><div class="row sb"><h2>${esc(t("ranges"))}</h2>${I("shield")}</div><p class="sub">${esc(rangesText())}</p><p class="sub">${esc(t("privD"))}</p><button class="btn link" data-a="go" data-v="profile">${esc(t("profile"))} ›</button></section>
+ <section class="card"><div class="row sb"><h2>${esc(t("recordsT"))}</h2><button class="btn link" data-a="go" data-v="records">${esc(t("records"))} ›</button></div>
+ ${rec.length?rec.map(recRow).join(""):`<div class="empty"><b>${esc(t("noCk"))}</b>${esc(t("noCkHint"))}</div>`}</section>`;
+}
+
+function viewRecords(){
+ const q=ui.q.toLowerCase();
+ const list=sorted().filter(c=>{const d=new Date(c.at);
+  return(!q||c.checkupId.toLowerCase().includes(q))&&(!ui.from||d>=new Date(ui.from+"T00:00:00"))&&(!ui.to||d<=new Date(ui.to+"T23:59:59"))&&(ui.st==="all"||c.status===ui.st)});
+ const consent=!!S.profile.consentAt;
+ const now=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+ return`${heading(t("recordsT"),t("recordsI"),"MediPulse")}
+ <section class="card"><h2>${esc(t("manual"))}</h2>
+ ${consent?"":`<div class="note warn"><span>${esc(t("needConsent"))}</span><button class="btn sm" data-a="consent">${esc(t("giveConsent"))}</button></div>`}
+ <form id="mf"><div class="two"><label class="f">${esc(t("hrIn"))}<input name="hr" type="number" inputmode="numeric" min="20" max="250" step="1" required></label>
+ <label class="f">${esc(t("spoIn"))}<input name="spo2" type="number" inputmode="numeric" min="50" max="100" step="1" required></label></div>
+ <div class="two"><label class="f">${esc(t("when"))}<input name="at" type="datetime-local" value="${now}" max="${now}" required></label>
+ <label class="f">${esc(t("qual"))}<select name="q"><option value="">${esc(t("qNone"))}</option><option value="good">${esc(t("good"))}</option><option value="poor">${esc(t("poor"))}</option><option value="inconclusive">${esc(t("inconc"))}</option></select></label></div>
+ <p style="margin-top:12px"><button class="btn" type="submit">${esc(t("saveM"))}</button></p></form></section>
+ <section class="card"><div class="two"><label class="f">${esc(t("search"))}<input id="q" value="${esc(ui.q)}" autocomplete="off"></label>
+ <label class="f">${esc(t("status"))}<select id="st"><option value="all">${esc(t("allSt"))}</option><option value="completed" ${ui.st==="completed"?"selected":""}>${esc(t("completed"))}</option><option value="failed" ${ui.st==="failed"?"selected":""}>${esc(t("failed"))}</option></select></label></div>
+ <div class="two"><label class="f">${esc(t("from"))}<input id="from" type="date" value="${esc(ui.from)}"></label><label class="f">${esc(t("to"))}<input id="to" type="date" value="${esc(ui.to)}"></label></div></section>
+ <section class="card"><div class="row sb"><div><h2>${esc(t("recordsT"))}</h2><p class="sub">${list.length} ${esc(t("count"))}</p></div>
+ <div class="row"><button class="btn sec sm" data-a="csv">${esc(t("exportCsv"))}</button></div></div>
+ ${list.length?list.map(recRow).join(""):`<div class="empty"><b>${esc(S.checkups.length?t("noRes"):t("noCk"))}</b>${S.checkups.length?"":esc(t("noCkHint"))}</div>`}</section>
+ ${trendPanel()}`;
+}
+
+function viewNearby(){
+ const f=ui.fac;
+ return`${heading(t("nearbyT"),t("nearbyI"),"MediPulse")}
+ <section class="card"><p class="sub">${esc(t("locHint"))}</p>
+ <div class="seg" role="group"><button data-a="kind" data-v="hospital" class="${ui.kind==="hospital"?"on":""}">${esc(t("hosp"))}</button><button data-a="kind" data-v="pharmacy" class="${ui.kind==="pharmacy"?"on":""}">${esc(t("pharm"))}</button></div>
+ <div class="row"><button class="btn" data-a="locate" ${f.loading?"disabled":""}>${esc(f.loading?t("searching"):t("useLoc"))}</button><span class="pill">${esc(t("within5"))}</span></div>
+ ${f.msg?`<div class="note warn"><span>${esc(f.msg)}</span> <button class="btn link" data-a="locate">${esc(t("tryAgain"))}</button></div>`:""}
+ <div id="map" ${f.pos?"":'hidden'}></div>
+ ${f.list.map(p=>`<div class="rec" style="cursor:default"><span class="m"><b>${esc(p.name)}</b><small>${esc(p.addr||"")}${p.addr?" · ":""}${p.km.toFixed(1)} km</small></span>
+ ${p.phone?`<a class="btn sec sm" href="tel:${esc(telClean(p.phone))}">${esc(t("call"))}</a>`:""}
+ <a class="btn sm" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">${esc(t("directions"))}</a></div>`).join("")}
+ ${f.pos?`<p class="login-ok">${esc(t("srcOSM"))}</p>`:""}</section>`;
+}
+
+function viewNotifs(){
+ const n=S.notifications;
+ return`${heading(t("notifs"),t("privD"),"MediPulse")}
+ <section class="card">${n.length?`<p><button class="btn sec sm" data-a="readall">${esc(t("markAll"))}</button></p>`:""}
+ ${n.length?n.map(x=>`<div class="nrow ${x.read?"rd":"un"}">${I("bell")}<div style="flex:1"><b>${esc(t(x.key))}</b><br><small class="sub">${esc(fmtDT(x.at))}</small></div>${x.read?"":`<button class="btn link" data-a="read" data-v="${esc(x.id)}">${esc(t("markRead"))}</button>`}</div>`).join(""):`<div class="empty"><b>${esc(t("noNotif"))}</b></div>`}</section>`;
+}
+
+function viewProfile(){
+ const p=S.profile,r=S.ranges;
+ const tg=(id,label,on)=>`<label class="tg"><span>${esc(label)}</span><input type="checkbox" id="${id}" ${on?"checked":""}></label>`;
+ return`${heading(t("profileT"),t("privD"),"MediPulse")}
+ <form id="pf" class="card"><h2>${esc(t("profileT"))}</h2>
+ <label class="f">${esc(t("fullName"))}<input name="name" maxlength="160" value="${esc(p.name)}" autocomplete="name"></label>
+ <label class="f">${esc(t("email"))}<input name="email" type="email" maxlength="200" value="${esc(p.email)}" autocomplete="email"></label>
+ <div class="two"><label class="f">${esc(t("dob"))}<input name="dob" type="date" value="${esc(p.dob)}"></label><label class="f">${esc(t("phone"))}<input name="phone" type="tel" maxlength="32" value="${esc(p.phone)}" autocomplete="tel"></label></div>
+ <div class="row sb" style="margin-top:16px"><b>${esc(t("trusted"))}</b><span class="pill">${esc(t("notShared"))}</span></div>
+ <label class="f">${esc(t("cName"))}<input name="cName" maxlength="160" value="${esc(p.cName)}"></label>
+ <div class="two"><label class="f">${esc(t("rel"))}<input name="cRel" maxlength="80" value="${esc(p.cRel)}"></label><label class="f">${esc(t("cPhone"))}<input name="cPhone" type="tel" maxlength="32" value="${esc(p.cPhone)}"></label></div>
+ ${telClean(p.cPhone)?`<p><a class="btn sec sm" href="tel:${esc(telClean(p.cPhone))}">${esc(t("callContact"))}</a></p>`:""}
+ <label class="chk"><input type="checkbox" name="consent" ${p.consentAt?"checked":""}><span><b>${esc(t("consent"))}</b><small>${esc(t("consentD"))}</small></span></label>
+ ${tg("notif",t("notifOn"),p.notif)}${tg("sec",t("secAlerts"),p.sec)}${tg("autoCall",t("autoCall"),p.autoCall)}<p class="sub">${esc(t("autoCallD"))}</p>
+ <label class="f">${esc(t("emerg"))}<input name="emerg" type="tel" maxlength="16" value="${esc(p.emerg)}"></label><p class="sub">${esc(t("emergHelp"))}</p>
+ <h2 style="margin-top:18px">${esc(t("ranges"))}</h2><p class="sub">${esc(t("rangesHelp"))}</p>
+ <div class="two" style="grid-template-columns:repeat(3,1fr)"><label class="f">${esc(t("hrMin"))}<input name="hrMin" type="number" min="20" max="250" value="${r.hrMin??""}"></label>
+ <label class="f">${esc(t("hrMax"))}<input name="hrMax" type="number" min="20" max="250" value="${r.hrMax??""}"></label>
+ <label class="f">${esc(t("spoMin"))}<input name="spoMin" type="number" min="50" max="100" value="${r.spoMin??""}"></label></div>
+ <p style="margin-top:14px"><button class="btn" type="submit">${esc(t("save"))}</button></p></form>
+
+ <section class="card"><h2>${esc(t("devices"))}</h2>
+ ${S.devices.length?S.devices.map(d=>`<div class="rec" style="cursor:default"><span class="m"><b>${esc(d.name||d.deviceId)}</b><small>${esc(d.deviceId)}</small></span><span class="pill ${d.status==="connected"?"ok":""}">${esc(t(d.status||"disconnected"))}</span></div>`).join(""):`<div class="empty">${esc(t("noDevice"))}</div>`}
+ <h2 style="margin-top:16px">${esc(t("importT"))}</h2><p class="sub">${esc(t("importH"))}</p>
+ <label class="f"><textarea id="imp" rows="5" dir="ltr" placeholder='{"checkupId":"…","deviceId":"…","heartRateBpm":72,"spo2Percent":98,"measuredAt":"2026-01-01T10:00:00Z","quality":"good","completionStatus":"completed"}'></textarea></label>
+ <p><button class="btn" data-a="import">${esc(t("importBtn"))}</button></p></section>
+
+ <section class="card"><h2>${esc(t("data"))}</h2><p class="sub">${esc(t("dataD"))}</p>
+ <div class="row"><button class="btn sec" data-a="json">${esc(t("exportJson"))}</button><label class="btn sec" style="margin:0">${esc(t("restore"))}<input id="rs" type="file" accept="application/json,.json" hidden></label></div>
+ <p style="margin-top:14px"><button class="btn danger" data-a="delall">${esc(t("delAll"))}</button></p></section>`;
+}
+
+function viewModal(){
+if(ui.alert){const c=S.checkups.find(x=>x.id===ui.alert.id);return`<div class="mb"><div class="modal" role="alertdialog" aria-modal="true" style="border-top:6px solid var(--red)"><h2 style="color:var(--red)">${esc(t("critTitle"))}</h2><p>${esc(t("critBody"))}</p><p><b>${c&&c.hr!=null?c.hr+" "+esc(t("bpm")):"—"} · ${c&&c.spo2!=null?c.spo2+"%":"—"}</b></p>${S.profile.autoCall?`<p class="sub">${esc(t("autoIn"))} <b id="cd">${ui.alert.left}</b>s</p>`:""}<div class="row" style="margin-top:14px"><button class="btn" style="background:var(--red)" data-a="callNow">${esc(t("callNow"))}</button><button class="btn sec" data-a="dismissAlert" id="mc">${esc(t("imOk"))}</button></div></div></div>`}
+ if(ui.confirm==="all")return confirmBox(t("delAllQ"),t("delAll"),"doDelAll");
+ const c=S.checkups.find(x=>x.id===ui.sel);if(!c)return"";
+ if(ui.confirm==="one")return confirmBox(t("delQ"),t("confirmDel"),"doDel");
+ const i=interpret(c);
+ return`<div class="mb" data-a="closeBg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+ <div class="row sb"><div><span class="eyebrow">${esc(c.checkupId)}</span><h2 id="mt">${esc(t("recordsT"))}</h2></div><button class="btn sec sm" data-a="close" id="mc" aria-label="${esc(t("close"))}">✕</button></div>
+ <div class="grid c2" style="margin-top:10px">${metric(t("hr"),c.hr,t("bpm"),"","")}${metric(t("spo2"),c.spo2,"%","b","")}</div>
+ <dl><dt>${esc(t("measuredOn"))}</dt><dd>${esc(fmtDT(c.at))}</dd><dt>${esc(t("qual"))}</dt><dd>${esc(qLabel(c.quality))}</dd>
+ <dt>${esc(t("status"))}</dt><dd>${esc(c.status==="completed"?t("completed"):t("failed"))}</dd>
+ <dt>${esc(t("interp"))}</dt><dd><span class="pill ${interpPill(i)}">${esc(interpLabel(i))}</span></dd>
+ <dt>${esc(t("source"))}</dt><dd>${esc(c.source==="device"?t("srcDevice"):t("srcManual"))}</dd><dt>${esc(t("deviceId"))}</dt><dd>${esc(c.deviceId||"—")}</dd>
+ <dt>${esc(t("sync"))}</dt><dd>${esc(t("syncLocal"))}</dd></dl>
+ <div class="note"><span><b>${esc(t("ranges"))}:</b> ${esc(rangesText())}</span></div>
+ <p style="margin-top:14px"><button class="btn danger" data-a="askDel">${esc(t("del"))}</button></p></div></div>`;
+}
+function confirmBox(msg,yes,act){
+ return`<div class="mb"><div class="modal" role="alertdialog" aria-modal="true"><p><b>${esc(msg)}</b></p><div class="row" style="margin-top:14px"><button class="btn danger" data-a="${act}">${esc(yes)}</button><button class="btn sec" data-a="close" id="mc">${esc(t("cancel"))}</button></div></div></div>`;
+}
+
+/* ================= render ================= */
+function render(){
+ document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==="ar"?"rtl":"ltr";
+ if(AUTH!=="in"){document.getElementById("app").innerHTML=authView();document.getElementById("modal").innerHTML="";return}
+ const views=ME.role==="doctor"?{patients:viewDocPatients,patient:viewDocPatient,dprofile:viewDocProfile}:{home:viewHome,records:viewRecords,nearby:viewNearby,doctors:viewDoctors,profile:viewProfile,notifications:viewNotifs};
+ const v=(views[ui.section]||Object.values(views)[0])();
+ const keepFocus=document.activeElement&&document.activeElement.id;const sel=document.activeElement&&document.activeElement.selectionStart;
+ document.getElementById("app").innerHTML=header()+`<main>${v}</main>`+nav();
+ document.getElementById("modal").innerHTML=viewModal();
+ if(keepFocus&&["q","from","to","st"].includes(keepFocus)){const e=document.getElementById(keepFocus);if(e){e.focus();try{if(sel!=null)e.setSelectionRange(sel,sel)}catch(_){}}}
+ const mc=document.getElementById("mc");if(mc)mc.focus();
+ if(ui.section==="nearby")drawMap();
+}
+
+/* ================= actions ================= */
+function download(name,mime,data){const b=new Blob([data],{type:mime});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+const csvCell=v=>{let s=String(v==null?"":v);if(/^[=+\-@]/.test(s))s="'"+s;return'"'+s.replace(/"/g,'""')+'"'};
+function validatePayload(o){
+ if(!o||typeof o!=="object")return"JSON";
+ if(typeof o.checkupId!=="string"||!o.checkupId||o.checkupId.length>64)return"checkupId";
+ if(typeof o.deviceId!=="string"||!o.deviceId||o.deviceId.length>96)return"deviceId";
+ const hr=o.heartRateBpm,sp=o.spo2Percent;
+ if(hr!=null&&!(Number.isInteger(hr)&&hr>=20&&hr<=250))return"heartRateBpm";
+ if(sp!=null&&!(Number.isInteger(sp)&&sp>=50&&sp<=100))return"spo2Percent";
+ if(isNaN(Date.parse(o.measuredAt)))return"measuredAt";
+ if(!["good","poor","inconclusive"].includes(o.quality))return"quality";
+ if(!["completed","failed"].includes(o.completionStatus))return"completionStatus";
+ if(o.completionStatus==="completed"&&hr==null&&sp==null)return"completionStatus";
+ return null;
+}
+function importPayload(txt){
+ let o;try{o=JSON.parse(txt)}catch(e){return toast(t("badPayload")+"JSON")}
+ const bad=validatePayload(o);if(bad)return toast(t("badPayload")+bad);
+ if(!S.profile.consentAt)return toast(t("needConsent"));
+ if(S.checkups.some(c=>c.checkupId===o.checkupId&&c.source==="device"))return toast(t("dup"));
+ S.checkups.push({id:uid(),checkupId:o.checkupId,hr:o.heartRateBpm??null,spo2:o.spo2Percent??null,at:new Date(o.measuredAt).toISOString(),quality:o.quality,status:o.completionStatus,source:"device",deviceId:o.deviceId});
+ let d=S.devices.find(x=>x.deviceId===o.deviceId);if(!d){d={deviceId:o.deviceId,name:o.deviceId,status:"disconnected"};S.devices.push(d)}
+ addNote("checkup_complete",o.completionStatus==="completed"?"nDevice":"nFailed");persist();toast(t("imported"));triggerCritical(S.checkups[S.checkups.length-1]);render();
+}
+function restore(file){
+ const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||d.v!==1||!Array.isArray(d.checkups)||!d.profile)throw 0;
+  const b=blank();S={...b,...d,profile:{...b.profile,...d.profile},ranges:{...b.ranges,...(d.ranges||{})},notifications:d.notifications||[],devices:d.devices||[]};
+  S.checkups=S.checkups.filter(c=>c&&typeof c.id==="string"&&typeof c.checkupId==="string"&&!isNaN(Date.parse(c.at)));
+  persist();toast(t("restored"));render()}catch(e){toast(t("badBackup"))}};r.readAsText(file);
+}
+
+/* ---- nearby (OpenStreetMap + Leaflet, loaded only when needed) ---- */
+let leafletP=null,map=null,layer=null;
+function loadLeaflet(){
+ if(window.L)return Promise.resolve();if(leafletP)return leafletP;
+ leafletP=new Promise((res,rej)=>{
+  const css=document.createElement("link");css.rel="stylesheet";css.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";document.head.appendChild(css);
+  const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";s.onload=()=>res();s.onerror=()=>{leafletP=null;rej()};document.head.appendChild(s)});
+ return leafletP;
+}
+function drawMap(){
+ const f=ui.fac;const el=document.getElementById("map");if(!el||!f.pos){map=null;return}
+ loadLeaflet().then(()=>{
+  const el2=document.getElementById("map");if(!el2)return;
+  if(map){map.remove();map=null}
+  map=L.map(el2).setView([f.pos.lat,f.pos.lng],13);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"}).addTo(map);
+  L.circleMarker([f.pos.lat,f.pos.lng],{radius:7,color:"#102a43"}).addTo(map);
+  f.list.forEach(p=>L.marker([p.lat,p.lng]).addTo(map).bindPopup(esc(p.name)));
+  if(f.list.length){map.fitBounds(L.latLngBounds([[f.pos.lat,f.pos.lng],...f.list.map(p=>[p.lat,p.lng])]),{padding:[30,30]})}
+ }).catch(()=>{});
+}
+const hav=(a,b,c,d)=>{const R=6371,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b);const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+async function searchNearby(){
+ const f=ui.fac;f.msg="";f.list=[];
+ if(!window.isSecureContext){f.msg=t("locSecure");return render()}
+ if(!navigator.geolocation){f.msg=t("locFail");return render()}
+ f.loading=true;render();
+ let pos;
+ try{pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:12000,maximumAge:60000}))}
+ catch(e){f.loading=false;f.msg=e&&e.code===1?t("locDenied"):t("locFail");return render()}
+ f.pos={lat:pos.coords.latitude,lng:pos.coords.longitude};
+ const am=ui.kind==="hospital"?"hospital":"pharmacy";
+ const q=`[out:json][timeout:20];(node["amenity"="${am}"](around:5000,${f.pos.lat},${f.pos.lng});way["amenity"="${am}"](around:5000,${f.pos.lat},${f.pos.lng}););out center 40;`;
+ try{
+  const r=await fetch("https://overpass-api.de/api/interpreter",{method:"POST",body:"data="+encodeURIComponent(q),headers:{"Content-Type":"application/x-www-form-urlencoded"}});
+  if(!r.ok)throw 0;const j=await r.json();
+  f.list=(j.elements||[]).map(e=>{const lat=e.lat??e.center?.lat,lng=e.lon??e.center?.lon;if(lat==null||lng==null)return null;const g=e.tags||{};
+   return{name:g.name||g["name:"+S.lang]||g["name:en"]||(ui.kind==="hospital"?t("hosp"):t("pharm")),addr:[g["addr:street"],g["addr:housenumber"],g["addr:city"]].filter(Boolean).join(" "),phone:g.phone||g["contact:phone"]||"",lat,lng,km:hav(f.pos.lat,f.pos.lng,lat,lng)}}).filter(Boolean).sort((a,b)=>a.km-b.km).slice(0,25);
+  if(!f.list.length)f.msg=t("noPlaces");
+ }catch(e){f.msg=navigator.onLine?t("searchFail"):t("offline")}
+ f.loading=false;render();
+}
+
+/* ================= events ================= */
+document.addEventListener("click",e=>{
+ const el=e.target.closest("[data-a]");if(!el)return;
+ const a=el.dataset.a,v=el.dataset.v;
+ if(a==="closeBg"){if(e.target===el&&!ui.confirm){ui.sel=null;render()}return}
+ switch(a){
+  case"go":ui.section=v;ui.sel=null;ui.confirm=null;render();window.scrollTo(0,0);break;
+  case"lang":S.lang=v;try{localStorage.setItem("medipulse:lang",v)}catch(_){}persist();render();break;
+  case"period":ui.period=Number(v);render();break;
+  case"open":ui.sel=v;ui.confirm=null;render();break;
+  case"close":ui.sel=null;ui.confirm=null;render();break;
+  case"askDel":ui.confirm="one";render();break;
+  case"doDel":S.checkups=S.checkups.filter(c=>c.id!==ui.sel);ui.sel=null;ui.confirm=null;persist();toast(t("deleted"));render();break;
+  case"delall":ui.confirm="all";render();break;
+  case"doDelAll":try{localStorage.removeItem(KEY)}catch(_){}{const l=S.lang;S=blank();S.lang=l}mem=null;ui.confirm=null;ui.sel=null;persist();toast(t("delAllDone"));render();break;
+  case"consent":S.profile.consentAt=new Date().toISOString();persist();toast(t("consentGiven"));render();break;
+  case"read":{const n=S.notifications.find(x=>x.id===v);if(n)n.read=true;persist();render();break}
+  case"readall":S.notifications.forEach(n=>n.read=true);persist();render();break;
+  case"csv":{const h=["checkupId","measuredAt","heartRateBpm","spo2Percent","quality","status","source","deviceId"];
+   const rows=sorted().map(c=>[c.checkupId,c.at,c.hr,c.spo2,c.quality||"",c.status,c.source,c.deviceId||""].map(csvCell).join(","));
+   download("medipulse-records.csv","text/csv;charset=utf-8","﻿"+[h.join(",")].concat(rows).join("\r\n"));addNote("security","nExport");persist();toast(t("exported"));break}
+  case"json":download("medipulse-backup.json","application/json",JSON.stringify(S,null,2));addNote("security","nExport");persist();toast(t("exported"));break;
+  case"import":importPayload(document.getElementById("imp").value);break;
+  case"kind":ui.kind=v;ui.fac={pos:ui.fac.pos,list:[],msg:"",loading:false};if(ui.fac.pos)searchNearby();else render();break;
+  case"locate":searchNearby();break;
+  case"callNow":stopAlert();dialEmergency();render();break;
+  case"dismissAlert":stopAlert();render();break;
+  case"logout":doLogout();break;
+  case"authmode":ui.authMode=v;render();break;
+  case"forgot":doForgot();break;
+  case"openPat":ui.patUid=v;ui.section="patient";render();window.scrollTo(0,0);loadPat(v,true);break;
+  case"backPat":ui.section="patients";ui.patUid=null;render();break;
+  case"refPat":loadPat(ui.patUid,true);break;
+  case"copycode":if(navigator.clipboard)navigator.clipboard.writeText(ME.code).then(()=>toast(t("codeCopied"))).catch(()=>{});break;
+  case"approve":db.collection("links").doc(v).update({status:"active"}).then(()=>toast(t("approved"))).catch(()=>toast(t("syncErr")));break;
+  case"decline":case"unlink":case"docunlink":if(a!=="decline"&&!confirm(t("unlinkQ")))break;db.collection("links").doc(v).delete().then(()=>{if(a==="docunlink"&&ui.section==="patient"){ui.section="patients";ui.patUid=null}toast(t("done"));render()}).catch(()=>toast(t("syncErr")));break;
+ }
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&(ui.sel||ui.confirm)){ui.sel=null;ui.confirm=null;render()}});
+document.addEventListener("input",e=>{
+ const id=e.target.id;if(id==="q"){ui.q=e.target.value;render()}
+});
+document.addEventListener("change",e=>{
+ const id=e.target.id;
+ if(id==="from"){ui.from=e.target.value;render()}else if(id==="to"){ui.to=e.target.value;render()}else if(id==="st"){ui.st=e.target.value;render()}
+ else if(id==="rs"&&e.target.files[0]){restore(e.target.files[0]);e.target.value=""}
+});
+document.addEventListener("submit",e=>{
+ e.preventDefault();const f=e.target;
+ if(f.id==="mf"){
+  const hr=Number(f.hr.value),sp=Number(f.spo2.value),at=f.at.value?new Date(f.at.value):new Date();
+  if(!S.profile.consentAt)return toast(t("needConsent"));
+  if(!(Number.isInteger(hr)&&hr>=20&&hr<=250&&Number.isInteger(sp)&&sp>=50&&sp<=100)||isNaN(at)||at.getTime()>Date.now()+6e4)return toast(t("badVals"));
+  S.checkups.push({id:uid(),checkupId:"manual-"+uid().slice(0,8),hr,spo2:sp,at:at.toISOString(),quality:f.q.value||null,status:"completed",source:"manual",deviceId:null});
+  addNote("checkup_complete","nSaved");persist();toast(t("savedM"));triggerCritical(S.checkups[S.checkups.length-1]);render();
+ }else if(f.id==="af"){doAuth(f)}else if(f.id==="lf"){doLink(f)}else if(f.id==="dpf"){S.profile.name=f.elements.name.value.trim();persist();toast(t("profSaved"));render()}else if(f.id==="pf"){
+  const g=n=>f.elements[n].value.trim(),num=n=>{const v=f.elements[n].value.trim();return v===""?null:Number(v)};
+  const hrMin=num("hrMin"),hrMax=num("hrMax"),spoMin=num("spoMin");
+  const okN=(v,a,b)=>v==null||(Number.isFinite(v)&&v>=a&&v<=b);
+  if(!okN(hrMin,20,250)||!okN(hrMax,20,250)||!okN(spoMin,50,100)||(hrMin!=null&&hrMax!=null&&hrMin>hrMax))return toast(t("badVals"));
+  const wasSec=JSON.stringify([S.profile.cName,S.profile.cPhone]);
+  Object.assign(S.profile,{name:g("name"),email:g("email"),dob:g("dob"),phone:g("phone"),cName:g("cName"),cRel:g("cRel"),cPhone:g("cPhone"),emerg:g("emerg")||"123",
+   notif:document.getElementById("notif").checked,autoCall:document.getElementById("autoCall").checked,sec:document.getElementById("sec").checked});
+  const c=f.elements.consent.checked;if(c&&!S.profile.consentAt)S.profile.consentAt=new Date().toISOString();if(!c)S.profile.consentAt=null;
+  S.ranges={hrMin,hrMax,spoMin};persist();toast(t("profSaved"));render();
+ }
+});
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+const CFG={apiKey:"AIzaSyBm0GWRujz0xCJs0W5ZwNoCirUnMwbA5Vg",authDomain:"medipulse-40761.firebaseapp.com",projectId:"medipulse-40761",storageBucket:"medipulse-40761.firebasestorage.app",messagingSenderId:"1088449420039",appId:"1:1088449420039:web:7de4eb7735cb661397c3a2"};
+try{if(window.firebase){firebase.initializeApp(CFG);auth=firebase.auth();db=firebase.firestore();fbReady=true}}catch(e){}
+if(fbReady){auth.onAuthStateChanged(async u=>{
+ if(unsubLinks){unsubLinks();unsubLinks=null}
+ if(!u){ME=null;AUTH="out";const l=S.lang;S=blank();S.lang=l;ui.links=[];ui.pat={};render();return}
+ if(AUTH!=="in"){AUTH="loading";render()}
+ try{await loadUser(u)}catch(e){console.error(e);ME=null;AUTH="out";toast(t("loadErr"));try{await auth.signOut()}catch(_){}render()}
+})}else AUTH="out";
+render();
+</script>
+</body>
+</html>
